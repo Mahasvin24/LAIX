@@ -1,60 +1,92 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize Feather icons
+  feather.replace()
+
+  // DOM elements
+  const chatForm = document.getElementById("chat-form")
+  const messageInput = document.getElementById("message-input")
   const chatMessages = document.getElementById("chat-messages")
-  const chatInput = document.getElementById("chat-input")
   const sendButton = document.getElementById("send-button")
+  const refreshButton = document.getElementById("refresh-button")
 
-  // Sample bot responses
-  const botResponses = [
-    "I notice something's not working right on my end. How are you feeling right now? I'm here to listen.",
-    "Thank you for sharing that with me. Could you tell me more about how these experiences have been affecting you emotionally?",
-    "I understand that can be difficult. What kind of support would be most helpful for you right now?",
-    "It sounds like you're going through a challenging time. Remember that it's okay to feel this way, and your feelings are valid.",
-    "I'm here to support you. Would it help to talk about some coping strategies that might work for your situation?",
-  ]
-
-  // Add initial bot message
-  addMessage("I'm here to listen and support you. How are you feeling today?", "bot")
-
-  // Send message when button is clicked
-  sendButton.addEventListener("click", sendMessage)
-
-  // Send message when Enter key is pressed
-  chatInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      sendMessage()
-    }
-  })
-
-  function sendMessage() {
-    const message = chatInput.value.trim()
-    if (message !== "") {
-      // Add user message to chat
-      addMessage(message, "user")
-
-      // Clear input field
-      chatInput.value = ""
-
-      // Simulate bot thinking with delay
-      setTimeout(() => {
-        // Always respond with "hi"
-        addMessage("hi", "bot")
-
-        // Scroll to bottom of chat
-        chatMessages.scrollTop = chatMessages.scrollHeight
-      }, 1000)
+  // Remove empty state on first message
+  function removeEmptyState() {
+    const emptyState = document.querySelector(".empty-state")
+    if (emptyState) {
+      emptyState.remove()
     }
   }
 
-  function addMessage(text, sender) {
-    const messageElement = document.createElement("div")
-    messageElement.classList.add("message")
-    messageElement.classList.add(sender === "user" ? "user-message" : "bot-message")
-    messageElement.textContent = text
+  // Add a message to the chat
+  function addMessage(content, isUser = false) {
+    removeEmptyState()
 
-    chatMessages.appendChild(messageElement)
+    const messageDiv = document.createElement("div")
+    messageDiv.className = `message ${isUser ? "user-message" : "ai-message"}`
 
-    // Scroll to bottom of chat
+    const messageBubble = document.createElement("div")
+    messageBubble.className = "message-bubble"
+    messageBubble.textContent = content
+
+    messageDiv.appendChild(messageBubble)
+    chatMessages.appendChild(messageDiv)
+
+    // Scroll to bottom
     chatMessages.scrollTop = chatMessages.scrollHeight
   }
+
+  // Mock AI response
+  function mockAiResponse(userMessage) {
+    // Simple responses based on user input
+    const responses = [
+      "I'm Serenity, how can I help you today?",
+      "That's an interesting question. Let me think about it.",
+      "I understand what you're asking. Here's what I think...",
+      "Thanks for sharing that with me.",
+      "I'm here to assist you with any questions you might have.",
+    ]
+
+    // Simulate typing delay
+    setTimeout(() => {
+      // Choose a random response
+      const randomIndex = Math.floor(Math.random() * responses.length)
+      addMessage(responses[randomIndex], false)
+    }, 1000)
+  }
+
+  // Handle form submission
+  chatForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+
+    const message = messageInput.value.trim()
+    if (!message) return
+
+    // Add user message
+    addMessage(message, true)
+
+    // Clear input
+    messageInput.value = ""
+
+    // Get AI response
+    mockAiResponse(message)
+  })
+
+  // Enable/disable send button based on input
+  messageInput.addEventListener("input", () => {
+    sendButton.disabled = !messageInput.value.trim()
+  })
+
+  // Initialize send button state
+  sendButton.disabled = true
+
+  // Handle refresh button
+  refreshButton.addEventListener("click", () => {
+    // Clear chat messages and restore empty state
+    chatMessages.innerHTML = '<div class="empty-state"><p>Start a conversation with Serenity...</p></div>'
+
+    // Clear input
+    messageInput.value = ""
+    sendButton.disabled = true
+  })
 })
 
