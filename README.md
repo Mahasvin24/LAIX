@@ -4,8 +4,8 @@ LAIX - Collaborative Project Repository
    git clone https://github.com/Mahasvin24/LAIX.git
    cd LAIX
 
-2. Install dependencies (if applicable)
-   # Example for Node.js:
+2. Install dependencies
+   # Download Node.js:
    npm install
 
 3. Set up environment variables (if needed)
